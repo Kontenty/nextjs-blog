@@ -69,7 +69,12 @@ export default function Home({ categories, posts, pages }: HomeProps) {
               </Link>
             ))}
             <p className="text-slate-600 mt-2">Title</p>
-            <input name="title" className="border p-2" />
+            <input name="title" className="border p-2 mb-2" />
+            <Link href="/">
+              <button className="px-6 py-2 text-sm bg-slate-200 border-b-2 disabled:opacity-30">
+                Clear filters x
+              </button>
+            </Link>
           </aside>
 
           <div className="max-w-5xl w-ful">
