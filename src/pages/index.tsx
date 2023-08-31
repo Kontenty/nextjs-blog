@@ -33,7 +33,7 @@ type HomeProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 export default function Home({ categories, posts, pages }: HomeProps) {
   const router = useRouter();
-  const { cat: categoryQuery, page } = router.query;
+  const { cat: categoryQuery } = router.query;
   const [currentPage, setCurrentPage] = useState(1);
   const { data } = useSWR<{ posts: BlogPost[]; pages: number }>(
     categoryQuery
