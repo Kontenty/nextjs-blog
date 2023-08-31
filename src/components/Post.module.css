@@ -9,6 +9,6 @@
 }
 
 .category {
+  @apply flex gap-2 text-sm;
   color: #524cdc;
-  font-size: 0.75rem;
 }

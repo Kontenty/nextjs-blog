@@ -1,4 +1,10 @@
-export interface BlogPost {
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+export interface FetchBlogPost {
   id: number;
   slug: string;
   title: string;
@@ -7,13 +13,16 @@ export interface BlogPost {
   categories: number[];
 }
 
-export interface Category {
-  id: number;
-  name: string;
-  slug: string;
+export interface BlogPost extends Omit<FetchBlogPost, "categories"> {
+  categories: (Category | undefined)[];
 }
 
 export interface BlogData {
   posts: BlogPost[];
+  categories: Category[];
+}
+
+export interface FetchBlogData {
+  posts: FetchBlogPost[];
   categories: Category[];
 }

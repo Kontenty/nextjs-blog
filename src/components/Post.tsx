@@ -25,7 +25,11 @@ const Post = ({ post }: Props) => {
         />
       </div>
       <div className={styles.cardContent}>
-        <p className={styles.category}>{post.categories}</p>
+        <div className={styles.category}>
+          {post.categories.map((category) => (
+            <span key={category?.id}>{category?.name}</span>
+          ))}
+        </div>
         <h3 className="text-xl">{post.title}</h3>
         <p className="text-slate-500">{post.excerpt}</p>
       </div>
