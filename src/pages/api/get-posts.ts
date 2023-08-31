@@ -22,7 +22,23 @@ export default async function handler(
 
   const currentPage = req.query.p ? Number(req.query.p) : 1;
   const categoryQuery = req?.query?.cat;
+  const titleQuery = req?.query?.title;
 
+  if (typeof titleQuery === "string") {
+    const filteredPosts = posts.filter((post) =>
+      post.title.includes(titleQuery)
+    );
+
+    const pages = Math.ceil(filteredPosts.length / PAGE_SIZE);
+    const paginatedPosts = filteredPosts.slice(
+      (currentPage - 1) * PAGE_SIZE,
+      (currentPage - 1) * PAGE_SIZE + PAGE_SIZE
+    );
+    return res.status(200).json({
+      posts: paginatedPosts,
+      pages,
+    });
+  }
   if (typeof categoryQuery === "string") {
     const filteredPosts = posts.filter((post) =>
       post.categories.map((postCat) => postCat?.slug).includes(categoryQuery)

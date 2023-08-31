@@ -1,13 +1,12 @@
 import { useState } from "react";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { Inter } from "next/font/google";
 import useSWR from "swr";
-import cs from "classNames";
 
 import Post from "@/components/Post";
 import { BlogPost, Category } from "@/types";
+import PostFilters from "@/components/PostFilters";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,29 +51,7 @@ export default function Home({ categories, posts, pages }: HomeProps) {
         </h3>
         <div className="flex gap-4">
           <aside className="flex flex-col gap-2 w-48">
-            <h3 className="text-lg">Filters</h3>
-            <p className="text-slate-600">Categories</p>
-            {categories.map((category) => (
-              <Link key={category.id} href={`/?cat=${category.slug}`}>
-                <button
-                  className={cs(
-                    "px-6 py-2 bg-indigo-100 border-b-2 disabled:opacity-30",
-                    {
-                      "border-red-600": category.slug === categoryQuery,
-                    }
-                  )}
-                >
-                  {category.name}
-                </button>
-              </Link>
-            ))}
-            <p className="text-slate-600 mt-2">Title</p>
-            <input name="title" className="border p-2 mb-2" />
-            <Link href="/">
-              <button className="px-6 py-2 text-sm bg-slate-200 border-b-2 disabled:opacity-30">
-                Clear filters x
-              </button>
-            </Link>
+            <PostFilters categories={categories} />
           </aside>
 
           <div className="max-w-5xl w-ful">
