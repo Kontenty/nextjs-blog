@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import { Inter } from "next/font/google";
+import useSWR from "swr";
 
 import Post from "@/components/Post";
 import { BlogPost, Category } from "@/types";
@@ -19,8 +20,8 @@ export const getStaticProps: GetStaticProps<{
     );
     const response = await Promise.all(sourceFetch);
     const posts = response[0].posts;
+    const pages = response[0].pages;
     const categories = response[1].categories;
-    const pages = Math.ceil(posts.length / PAGE_SIZE);
     return { props: { categories, posts, pages } };
   } catch (error) {
     return { props: { categories: [], posts: [], pages: 1 } };
@@ -32,6 +33,9 @@ type HomeProps = InferGetStaticPropsType<typeof getStaticProps>;
 export default function Home({ categories, posts, pages }: HomeProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { data } = useSWR<{ posts: BlogPost[]; pages: number }>(
+    `/api/get-posts?p=${currentPage}`
+  );
 
   const paginatedPosts = posts.slice(
     (currentPage - 1) * PAGE_SIZE,
@@ -54,7 +58,6 @@ export default function Home({ categories, posts, pages }: HomeProps) {
               <button
                 key={category.id}
                 className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
-                disabled={currentPage >= pages}
               >
                 {category.name}
               </button>
@@ -65,7 +68,7 @@ export default function Home({ categories, posts, pages }: HomeProps) {
 
           <div className="max-w-5xl w-ful">
             <div className="grid mb-6 grid-cols-3 gap-x-5 gap-y-6">
-              {paginatedPosts.map((post) => (
+              {(data?.posts || posts).map((post) => (
                 <Post key={post.id} post={post} />
               ))}
             </div>
