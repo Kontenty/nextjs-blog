@@ -1,9 +1,9 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
 import { NextApiRequest, NextApiResponse } from "next";
-import { BlogData, BlogPost, FetchBlogData } from "@/types";
+import { BlogPost, FetchBlogData } from "@/types";
 
-type ResponseData = BlogPost[];
+type ResponseData = { posts: BlogPost[] };
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,9 +16,9 @@ export default async function handler(
     return {
       ...post,
       categories: post.categories.map((postCategory) =>
-        blogData.categories.find((cat) => cat.id === postCategory)
+        blogData.categories.find((category) => category.id === postCategory)
       ),
     };
   });
-  return res.status(200).json(posts);
+  return res.status(200).json({ posts });
 }
