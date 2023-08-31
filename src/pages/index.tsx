@@ -1,11 +1,13 @@
 import { useState } from "react";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { Inter } from "next/font/google";
 import useSWR from "swr";
+import cs from "classNames";
 
 import Post from "@/components/Post";
 import { BlogPost, Category } from "@/types";
-import { PAGE_SIZE } from "@/constants";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,15 +33,13 @@ export const getStaticProps: GetStaticProps<{
 type HomeProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 export default function Home({ categories, posts, pages }: HomeProps) {
+  const router = useRouter();
+  const { cat: categoryQuery, page } = router.query;
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { data } = useSWR<{ posts: BlogPost[]; pages: number }>(
-    `/api/get-posts?p=${currentPage}`
-  );
-
-  const paginatedPosts = posts.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    (currentPage - 1) * PAGE_SIZE + PAGE_SIZE
+    categoryQuery
+      ? `/api/get-posts?p=${currentPage}&cat=${categoryQuery}`
+      : `/api/get-posts?p=${currentPage}`
   );
 
   return (
@@ -55,12 +55,18 @@ export default function Home({ categories, posts, pages }: HomeProps) {
             <h3 className="text-lg">Filters</h3>
             <p className="text-slate-600">Categories</p>
             {categories.map((category) => (
-              <button
-                key={category.id}
-                className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
-              >
-                {category.name}
-              </button>
+              <Link key={category.id} href={`/?cat=${category.slug}`}>
+                <button
+                  className={cs(
+                    "px-6 py-2 bg-indigo-100 border-b-2 disabled:opacity-30",
+                    {
+                      "border-red-600": category.slug === categoryQuery,
+                    }
+                  )}
+                >
+                  {category.name}
+                </button>
+              </Link>
             ))}
             <p className="text-slate-600 mt-2">Title</p>
             <input name="title" className="border p-2" />
@@ -81,11 +87,13 @@ export default function Home({ categories, posts, pages }: HomeProps) {
               >
                 &lt;&lt; Prev
               </button>
-              <span className="text-slate-600">Page: {currentPage}</span>
+              <span className="text-slate-600">
+                Page: {currentPage} of {data?.pages ?? pages}{" "}
+              </span>
               <button
                 className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
                 onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage >= pages}
+                disabled={currentPage >= (data?.pages ?? pages)}
               >
                 Next &gt;&gt;
               </button>

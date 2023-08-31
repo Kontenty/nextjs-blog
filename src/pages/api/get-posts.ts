@@ -19,12 +19,31 @@ export default async function handler(
       blogData.categories.find((category) => category.id === postCategory)
     ),
   }));
+
   const currentPage = req.query.p ? Number(req.query.p) : 1;
+  const categoryQuery = req?.query?.cat;
+
+  if (typeof categoryQuery === "string") {
+    const filteredPosts = posts.filter((post) =>
+      post.categories.map((postCat) => postCat?.slug).includes(categoryQuery)
+    );
+
+    const pages = Math.ceil(filteredPosts.length / PAGE_SIZE);
+    const paginatedPosts = filteredPosts.slice(
+      (currentPage - 1) * PAGE_SIZE,
+      (currentPage - 1) * PAGE_SIZE + PAGE_SIZE
+    );
+    return res.status(200).json({
+      posts: paginatedPosts,
+      pages,
+    });
+  }
+
+  const pages = Math.ceil(posts.length / PAGE_SIZE);
   const paginatedPosts = posts.slice(
     (currentPage - 1) * PAGE_SIZE,
     (currentPage - 1) * PAGE_SIZE + PAGE_SIZE
   );
-  const pages = Math.ceil(posts.length / PAGE_SIZE);
 
   return res.status(200).json({ posts: paginatedPosts, pages });
 }
