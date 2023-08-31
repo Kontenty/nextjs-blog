@@ -21,6 +21,7 @@ const Post = ({ post }: Props) => {
           fill
           alt="post image"
           className="object-cover object-center"
+          sizes="100%"
           onError={() => setIsImgError(true)}
         />
       </div>
