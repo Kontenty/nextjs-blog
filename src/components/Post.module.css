@@ -1,0 +1,14 @@
+.card {
+  @apply rounded-md shadow-md hover:-translate-y-2 hover:shadow-lg;
+  overflow: hidden;
+  transition: all 0.5s ease-out;
+}
+
+.cardContent {
+  @apply flex flex-col gap-3 p-6;
+}
+
+.category {
+  color: #524cdc;
+  font-size: 0.75rem;
+}
