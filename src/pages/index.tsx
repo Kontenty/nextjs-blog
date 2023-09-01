@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import useSWR from "swr";
@@ -43,6 +43,12 @@ export default function Home({ categories, posts, pages }: HomeProps) {
     }).replaceAll(" ", "")
   );
 
+  useEffect(() => {
+    if (categoryQuery || titleQuery) {
+      setCurrentPage(1);
+    }
+  }, [categoryQuery, titleQuery]);
+
   const handlePrev = () => {
     setCurrentPage(currentPage - 1);
   };
@@ -61,10 +67,8 @@ export default function Home({ categories, posts, pages }: HomeProps) {
         <aside className="flex flex-col gap-2 w-48">
           <PostFilters categories={categories} />
         </aside>
-
         <div className="w-full">
           <PostsList posts={data?.posts ?? posts} />
-
           <Pagination
             current={currentPage}
             pages={data?.pages ?? pages}
