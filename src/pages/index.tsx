@@ -7,6 +7,7 @@ import { clsx } from "clsx";
 import { BlogPost, Category } from "@/types";
 import PostFilters from "@/components/PostFilters";
 import PostsList from "@/components/PostsList";
+import Pagination from "@/components/Pagination";
 
 const apiUrl = "/api/posts";
 
@@ -42,6 +43,13 @@ export default function Home({ categories, posts, pages }: HomeProps) {
     }).replaceAll(" ", "")
   );
 
+  const handlePrev = () => {
+    setCurrentPage(currentPage - 1);
+  };
+  const handleNext = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
   return (
     <>
       <h1 className="mb-4 text-center text-3xl">From the blog</h1>
@@ -54,28 +62,15 @@ export default function Home({ categories, posts, pages }: HomeProps) {
           <PostFilters categories={categories} />
         </aside>
 
-        <div className="w-ful">
+        <div className="w-full">
           <PostsList posts={data?.posts ?? posts} />
 
-          <div className="flex justify-center items-center gap-3">
-            <button
-              className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage <= 1}
-            >
-              &lt;&lt; Prev
-            </button>
-            <span className="text-slate-600">
-              Page: {currentPage} of {data?.pages ?? pages}{" "}
-            </span>
-            <button
-              className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage >= (data?.pages ?? pages)}
-            >
-              Next &gt;&gt;
-            </button>
-          </div>
+          <Pagination
+            current={currentPage}
+            pages={data?.pages ?? pages}
+            onNext={handleNext}
+            onPrev={handlePrev}
+          />
         </div>
       </div>
     </>
