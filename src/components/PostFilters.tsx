@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import { useRouter } from "next/router";
 
 import { Category } from "@/types";
+import CloseIcon from "./icons/CloseIcon";
 
 type Props = {
   categories: Category[];
@@ -53,10 +54,10 @@ const PostFilters = ({ categories }: Props) => {
         </button>
       </Link>
       <button
-        className="px-6 py-2 mt-2 text-sm bg-slate-200 border-b-2 disabled:opacity-30"
+        className="flex gap-4 items-center justify-center px-6 py-2 mt-2 text-sm bg-slate-200 border-b-2 disabled:opacity-30"
         onClick={handleClear}
       >
-        Clear filters x
+        Clear filters <CloseIcon />
       </button>
     </>
   );
