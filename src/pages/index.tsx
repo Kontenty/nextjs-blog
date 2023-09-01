@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import useSWR from "swr";
-import cs from "classnames";
+import { clsx } from "clsx";
 
 import Post from "@/components/Post";
 import { BlogPost, Category } from "@/types";
@@ -36,10 +36,10 @@ export default function Home({ categories, posts, pages }: HomeProps) {
   const { cat: categoryQuery, title: titleQuery } = router.query;
   const [currentPage, setCurrentPage] = useState(1);
   const { data } = useSWR<{ posts: BlogPost[]; pages: number }>(
-    cs(`${apiUrl}?p=${currentPage}`, {
+    clsx(`${apiUrl}?p=${currentPage}`, {
       [`&cat=${categoryQuery}`]: categoryQuery,
       [`&title=${titleQuery}`]: titleQuery,
-    })
+    }).replaceAll(" ", "")
   );
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import cs from "classnames";
+import { clsx } from "clsx";
 import { useRouter } from "next/router";
 
 import { Category } from "@/types";
@@ -26,7 +26,7 @@ const PostFilters = ({ categories }: Props) => {
       {categories.map((category) => (
         <Link key={category.id} href={`/?cat=${category.slug}`}>
           <button
-            className={cs(
+            className={clsx(
               "px-6 py-2 bg-indigo-100 border-b-2 disabled:opacity-30",
               {
                 "border-red-600": category.slug === categoryQuery,
