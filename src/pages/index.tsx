@@ -33,17 +33,19 @@ type HomeProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 export default function Home({ categories, posts, pages }: HomeProps) {
   const router = useRouter();
-  const { cat: categoryQuery } = router.query;
+  const { cat: categoryQuery, title: titleQuery } = router.query;
   const [currentPage, setCurrentPage] = useState(1);
   const { data } = useSWR<{ posts: BlogPost[]; pages: number }>(
     categoryQuery
       ? `/api/get-posts?p=${currentPage}&cat=${categoryQuery}`
+      : titleQuery
+      ? `/api/get-posts?p=${currentPage}&title=${titleQuery}`
       : `/api/get-posts?p=${currentPage}`
   );
 
   return (
     <main className={`flex min-h-screen p-12 ${inter.className}`}>
-      <div className="mx-auto max-w-[1300px]">
+      <div className="mx-auto w-[1300px]">
         <h1 className="mb-4 text-center text-3xl">From the blog</h1>
         <h3 className="mb-8 max-w-md mx-auto text-center text-slate-400 text-lg">
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus
@@ -54,7 +56,7 @@ export default function Home({ categories, posts, pages }: HomeProps) {
             <PostFilters categories={categories} />
           </aside>
 
-          <div className="max-w-5xl w-ful">
+          <div className="w-ful">
             <div className="grid mb-6 grid-cols-3 gap-x-5 gap-y-6">
               {(data?.posts || posts).map((post) => (
                 <Post key={post.id} post={post} />
