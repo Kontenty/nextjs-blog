@@ -1,14 +1,14 @@
 import { useState } from "react";
 import type { InferGetStaticPropsType, GetStaticProps } from "next";
 import { useRouter } from "next/router";
-import { Inter } from "next/font/google";
 import useSWR from "swr";
+import cs from "classnames";
 
 import Post from "@/components/Post";
 import { BlogPost, Category } from "@/types";
 import PostFilters from "@/components/PostFilters";
 
-const inter = Inter({ subsets: ["latin"] });
+const apiUrl = "/api/posts";
 
 export const getStaticProps: GetStaticProps<{
   posts: BlogPost[];
@@ -16,7 +16,7 @@ export const getStaticProps: GetStaticProps<{
   categories: Category[];
 }> = async () => {
   try {
-    const sourceFetch = ["get-posts", "get-categories"].map((name) =>
+    const sourceFetch = ["posts", "categories"].map((name) =>
       fetch(`http://localhost:3000/api/${name}`).then((res) => res.json())
     );
     const response = await Promise.all(sourceFetch);
@@ -36,55 +36,52 @@ export default function Home({ categories, posts, pages }: HomeProps) {
   const { cat: categoryQuery, title: titleQuery } = router.query;
   const [currentPage, setCurrentPage] = useState(1);
   const { data } = useSWR<{ posts: BlogPost[]; pages: number }>(
-    categoryQuery
-      ? `/api/get-posts?p=${currentPage}&cat=${categoryQuery}`
-      : titleQuery
-      ? `/api/get-posts?p=${currentPage}&title=${titleQuery}`
-      : `/api/get-posts?p=${currentPage}`
+    cs(`${apiUrl}?p=${currentPage}`, {
+      [`&cat=${categoryQuery}`]: categoryQuery,
+      [`&title=${titleQuery}`]: titleQuery,
+    })
   );
 
   return (
-    <main className={`flex min-h-screen p-12 ${inter.className}`}>
-      <div className="mx-auto w-[1300px]">
-        <h1 className="mb-4 text-center text-3xl">From the blog</h1>
-        <h3 className="mb-8 max-w-md mx-auto text-center text-slate-400 text-lg">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus
-          dignissimos magnam rerum debitis iste voluptatem libero a.
-        </h3>
-        <div className="flex gap-4">
-          <aside className="flex flex-col gap-2 w-48">
-            <PostFilters categories={categories} />
-          </aside>
+    <>
+      <h1 className="mb-4 text-center text-3xl">From the blog</h1>
+      <h3 className="mb-8 max-w-md mx-auto text-center text-slate-400 text-lg">
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus
+        dignissimos magnam rerum debitis iste voluptatem libero a.
+      </h3>
+      <div className="flex gap-4">
+        <aside className="flex flex-col gap-2 w-48">
+          <PostFilters categories={categories} />
+        </aside>
 
-          <div className="w-ful">
-            <div className="grid mb-6 grid-cols-3 gap-x-5 gap-y-6">
-              {(data?.posts || posts).map((post) => (
-                <Post key={post.id} post={post} />
-              ))}
-            </div>
+        <div className="w-ful">
+          <div className="grid mb-6 grid-cols-3 gap-x-5 gap-y-6">
+            {(data?.posts || posts).map((post) => (
+              <Post key={post.id} post={post} />
+            ))}
+          </div>
 
-            <div className="flex justify-center items-center gap-3">
-              <button
-                className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
-                onClick={() => setCurrentPage(currentPage - 1)}
-                disabled={currentPage <= 1}
-              >
-                &lt;&lt; Prev
-              </button>
-              <span className="text-slate-600">
-                Page: {currentPage} of {data?.pages ?? pages}{" "}
-              </span>
-              <button
-                className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
-                onClick={() => setCurrentPage(currentPage + 1)}
-                disabled={currentPage >= (data?.pages ?? pages)}
-              >
-                Next &gt;&gt;
-              </button>
-            </div>
+          <div className="flex justify-center items-center gap-3">
+            <button
+              className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage <= 1}
+            >
+              &lt;&lt; Prev
+            </button>
+            <span className="text-slate-600">
+              Page: {currentPage} of {data?.pages ?? pages}{" "}
+            </span>
+            <button
+              className="px-6 py-2 bg-indigo-100 disabled:opacity-30"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage >= (data?.pages ?? pages)}
+            >
+              Next &gt;&gt;
+            </button>
           </div>
         </div>
       </div>
-    </main>
+    </>
   );
 }
