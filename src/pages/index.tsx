@@ -4,9 +4,9 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { clsx } from "clsx";
 
-import Post from "@/components/Post";
 import { BlogPost, Category } from "@/types";
 import PostFilters from "@/components/PostFilters";
+import PostsList from "@/components/PostsList";
 
 const apiUrl = "/api/posts";
 
@@ -55,11 +55,7 @@ export default function Home({ categories, posts, pages }: HomeProps) {
         </aside>
 
         <div className="w-ful">
-          <div className="grid mb-6 grid-cols-3 gap-x-5 gap-y-6">
-            {(data?.posts || posts).map((post) => (
-              <Post key={post.id} post={post} />
-            ))}
-          </div>
+          <PostsList posts={data?.posts ?? posts} />
 
           <div className="flex justify-center items-center gap-3">
             <button
